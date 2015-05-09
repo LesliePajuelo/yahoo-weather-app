@@ -1,18 +1,33 @@
 require 'yahoo_weatherman'
 
-def find_weather(zip)
-client = Weatherman::Client.new
-weather = client.lookup_by_location(zip)
-text = client.lookup_by_location(zip).condition['text']
-puts "Currently, it is #{text}"
-
-return weather
+#translate zip to location
+def get_location(zip)
+    location = Weatherman::Client.new(:unit =>'f')
+    location.lookup_by_location(zip)
 end
 
-puts "Enter a zip code"
+puts "Please enter the zip code for a 5 day forecast:"
+weather = get_location(gets.chomp)
 
-#Accept location, assign location to a variable
-zip = gets.to_s
+#%w is day of the week with Sunday as 0
+today = Time.now.strftime('%w').to_i
 
-#call method
-weather = find_weather(zip)
+#loops through each forecast. The gem limits this to 5 days.
+weather.forecasts.each do |forecast|
+    day = forecast['date']
+    weekday = day.strftime('%w').to_i
+
+    #Assign proper naming convention
+    if weekday == today
+        name = "Today"
+
+        #accounts for when today is 6 (Saturday)
+    elsif weekday == today+1 || weekday == today-6
+        name = "Tomorrow"
+    else
+        name = day.strftime('%A')
+    end
+
+    puts name + ' is going to be ' + forecast['text'].downcase + ' with a low of ' +
+    forecast['low'].to_s+ ' degrees and a high of ' + forecast['high'].to_s + ' degrees.'
+end
