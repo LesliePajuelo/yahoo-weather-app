@@ -21,7 +21,7 @@ weather.forecasts.each do |forecast|
     if weekday == today
         name = "Today"
 
-        #accounts for when today is 6 (Saturday)
+        #accounts for when today is 6
     elsif weekday == today+1 || weekday == today-6
         name = "Tomorrow"
     else
